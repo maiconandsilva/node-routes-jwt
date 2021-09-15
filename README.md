@@ -2,12 +2,12 @@
 
 #### Objetivos:
 
-• Usar o pacote Express para criar um servidor;
-• Definir rotas;
-• Restrição de acesso usando JWT (JSON Web Token);
-• Uso do ORM Sequelize (Object-Relational Mapper) para persistir os dados no BD;
-• Banco de dados PostgreSQL na cloud ElephantSQL;
-• Deploy da aplicação Node no Heroku.
+- Usar o pacote Express para criar um servidor;
+- Definir rotas;
+- Restrição de acesso usando JWT (JSON Web Token);
+- Uso do ORM Sequelize (Object-Relational Mapper) para persistir os dados no BD;
+- Banco de dados PostgreSQL na cloud ElephantSQL;
+- Deploy da aplicação Node no Heroku.
 
 #### Descrição da atividade
 
