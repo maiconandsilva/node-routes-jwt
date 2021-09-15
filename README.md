@@ -100,5 +100,5 @@ as extensões no VS Code:
 É necessário também adicionar a seguinte propriedade no arquivo de preferências "Open settings" do VS Code. Pressione `<Ctrl><Shift><p>` e digite `settings` para localizar o arquivo de preferências no VS Code e adicone a propriedade `"editor.formatOnSave": true` no arquivo JSON.
 
 Para mais detalhes recomenda-se assistir:
-[Eslint para iniciantes] (https://www.youtube.com/watch?v=i26sZrPj2zY) e
-[Sytle guides JavaScript com ESLint, Prettier e EditorConfig] (https://www.youtube.com/watch?v=TI4v4Y8yRjw).
+[Eslint para iniciantes](https://www.youtube.com/watch?v=i26sZrPj2zY) e
+[Sytle guides JavaScript com ESLint, Prettier e EditorConfig](https://www.youtube.com/watch?v=TI4v4Y8yRjw).
