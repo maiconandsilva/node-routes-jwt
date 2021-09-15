@@ -1,3 +1,3 @@
 module.exports = {
-  ...require("./authMiddleware"),
+	...require("./authMiddleware"),
 };

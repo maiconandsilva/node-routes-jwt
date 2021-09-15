@@ -4,204 +4,165 @@ const { generateToken } = Token;
 const { getToken } = require("../middlewares");
 
 class UsuarioController {
-  async create(req, res) {
-    let { mail, senha } = req.body;
-    mail = (mail || "").toString().trim();
-    senha = (senha || "").toString().trim();
-    if (mail === "") {
-      return res
-        .status(400)
-        .json({ error: ["Forneça o seu e-mail para cadastro"] });
-    }
-    if (senha === "") {
-      return res.status(400).json({ error: ["Forneça a senha para cadastro"] });
-    }
-    if (senha.length < 6 || senha.length > 10) {
-      return res
-        .status(400)
-        .json({ error: ["A senha deve ter entre 6 e 10 caracteres"] });
-    }
+	async create(req, res) {
+		let { mail, senha } = req.body;
+		mail = (mail || "").toString().trim();
+		senha = (senha || "").toString().trim();
 
-    return await UsuarioModel.create({ mail, senha, perfil: "user" })
-      .then((r) => {
-        const { idusuario, mail, perfil } = r.get();
-        return res.status(200).json({ idusuario, mail, perfil });
-      })
-      .catch((err) => {
-        try {
-          return res.status(400).json({
-            error: err.errors.map((item) => item.message),
-            type: "validation",
-          });
-        } catch (e) {
-          return res.status(400).json({ error: [e.message] });
-        }
-      });
-  }
+		return await UsuarioModel.create({ mail, senha, perfil: "user" })
+			.then((r) => {
+				const { idusuario, mail, perfil } = r.get();
+				return res.status(200).json({ idusuario, mail, perfil });
+			})
+			.catch((err) => {
+				try {
+					return res.status(400).json({
+						error: err.errors.map((item) => item.message),
+						type: "validation",
+					});
+				} catch (e) {
+					return res.status(400).json({ error: [e.message] });
+				}
+			});
+	}
 
-  async login(req, res) {
-    let { mail, senha } = req.body;
-    mail = (mail || "").toString().trim();
-    senha = (senha || "").toString().trim();
-    if (mail === "") {
-      return res
-        .status(400)
-        .json({ error: ["Forneça o e-mail do seu cadastro"] });
-    }
-    if (senha === "") {
-      return res
-        .status(400)
-        .json({ error: ["Forneça a sua senha de cadastro"] });
-    }
+	async login(req, res) {
+		let { mail, senha } = req.body;
+		mail = (mail || "").toString().trim();
+		senha = (senha || "").toString().trim();
+		if (mail === "") {
+			return res
+				.status(400)
+				.json({ error: ["Forneça o e-mail do seu cadastro"] });
+		}
+		if (senha === "") {
+			return res
+				.status(400)
+				.json({ error: ["Forneça a sua senha de cadastro"] });
+		}
 
-    return await UsuarioModel.findOne({
-      where: { mail },
-    })
-      .then(async (usuario) => {
-        if (usuario) {
-          if (usuario.comparePassword(senha, usuario.senha)) {
-            const token = await generateToken({
-              idusuario: usuario.idusuario,
-              mail: usuario.mail,
-              perfil: usuario.perfil,
-            });
+		return await UsuarioModel.findOne({
+			where: { mail },
+		})
+			.then(async (usuario) => {
+				if (usuario) {
+					if (usuario.comparePassword(senha, usuario.senha)) {
+						const token = await generateToken({
+							idusuario: usuario.idusuario,
+							mail: usuario.mail,
+							perfil: usuario.perfil,
+						});
 
-            return res.json({
-              token,
-              idusuario: usuario.idusuario,
-              mail: usuario.mail,
-              perfil: usuario.perfil,
-            });
-          } else
-            return res
-              .status(400)
-              .json({ error: ["Dados de login não conferem"] });
-        } else
-          return res.status(400).json({ error: ["Usuário não identificado"] });
-      })
-      .catch((e) => {
-        return res.status(400).json({ error: [e.message] });
-      });
-  }
+						return res.json({
+							token,
+							idusuario: usuario.idusuario,
+							mail: usuario.mail,
+							perfil: usuario.perfil,
+						});
+					} else
+						return res
+							.status(400)
+							.json({ error: ["Dados de login não conferem"] });
+				} else
+					return res.status(400).json({ error: ["Usuário não identificado"] });
+			})
+			.catch((e) => {
+				return res.status(400).json({ error: [e.message] });
+			});
+	}
 
-  async updatemail(req, res) {
-    const token = await getToken(req);
-    if (!token || !token.idusuario) {
-      return res.status(401).json({ error: ["Efetue o login para continuar"] });
-    }
+	async updatemail(req, res) {
+		const token = await getToken(req);
+		let { mail } = req.body;
+		mail = (mail || "").toString().trim();
 
-    let { mail } = req.body;
-    mail = (mail || "").toString().trim();
+		return await UsuarioModel.findOne({ where: { idusuario: token.idusuario } })
+			.then(async (usuario) => {
+				if (usuario) {
+					await usuario.update({ mail });
+					return res.status(200).json({
+						idusuario: usuario.idusuario,
+						mail: usuario.mail,
+					});
+				}
+				return res.status(400).json({ error: ["Usuário não identificado"] });
+			})
+			.catch((err) => {
+				try {
+					return res.status(400).json({
+						error: err.errors.map((item) => item.message),
+						type: "validation",
+					});
+				} catch (e) {
+					return res.status(400).json({ error: [e.message] });
+				}
+			});
+	}
 
-    if (mail === "") {
-      return res.status(400).json({ error: ["Forneça o seu novo e-mail"] });
-    }
+	async updatesenha(req, res) {
+		const token = await getToken(req);
+		let { senha } = req.body;
+		senha = (senha || "").toString().trim();
 
-    return await UsuarioModel.findOne({ where: { idusuario: token.idusuario } })
-      .then(async (usuario) => {
-        if (usuario) {
-          await usuario.update({ mail });
-          return res.status(200).json({
-            mail,
-          });
-        }
-        return res.status(400).json({ error: ["Usuário não identificado"] });
-      })
-      .catch((err) => {
-        try {
-          return res.status(400).json({
-            error: err.errors.map((item) => item.message),
-            type: "validation",
-          });
-        } catch (e) {
-          return res.status(400).json({ error: [e.message] });
-        }
-      });
-  }
+		return await UsuarioModel.findOne({ where: { idusuario: token.idusuario } })
+			.then(async (usuario) => {
+				if (usuario) {
+					await usuario.update({ senha });
+					return res.status(200).json({
+						idusuario: usuario.idusuario,
+					});
+				}
+				return res.status(400).json({ error: ["Usuário não identificado"] });
+			})
+			.catch((err) => {
+				try {
+					return res.status(400).json({
+						error: err.errors.map((item) => item.message),
+						type: "validation",
+					});
+				} catch (e) {
+					return res.status(400).json({ error: [e.message] });
+				}
+			});
+	}
 
-  async updatesenha(req, res) {
-    const token = await getToken(req);
-    if (!token || !token.idusuario) {
-      return res.status(401).json({ error: ["Efetue o login para continuar"] });
-    }
+	async updateperfil(req, res) {
+		const token = await getToken(req);
+		if (token.perfil !== "admin") {
+			return res
+				.status(401)
+				.json({ error: ["Sem autorização para realizar essa operação"] });
+		}
 
-    let { senha } = req.body;
-    senha = (senha || "").toString().trim();
-    if (senha === "") {
-      return res.status(400).json({ error: ["Forneça a nova senha"] });
-    }
-    if (senha.length < 6 || senha.length > 10) {
-      return res
-        .status(400)
-        .json({ error: ["A senha deve ter entre 6 e 10 caracteres"] });
-    }
+		let { idusuario, perfil } = req.body;
+		idusuario = (idusuario || "").toString().replace(/[^\d]+/g, "");
+		if (idusuario === "") {
+			return res
+				.status(401)
+				.json({ error: ["Forneça a identificação do usuário"] });
+		}
 
-    return await UsuarioModel.findOne({ where: { idusuario: token.idusuario } })
-      .then(async (usuario) => {
-        if (usuario) {
-          await usuario.update({ senha });
-          return res.status(200).json({
-            idusuario: token.idusuario,
-          });
-        }
-        return res.status(400).json({ error: ["Usuário não identificado"] });
-      })
-      .catch((err) => {
-        try {
-          return res.status(400).json({
-            error: err.errors.map((item) => item.message),
-            type: "validation",
-          });
-        } catch (e) {
-          return res.status(400).json({ error: [e.message] });
-        }
-      });
-  }
-
-  async updateperfil(req, res) {
-    const token = await getToken(req);
-    if (!token || !token.idusuario) {
-      return res.status(401).json({ error: ["Efetue o login para continuar"] });
-    }
-    if (token.perfil !== "admin") {
-      return res
-        .status(401)
-        .json({ error: ["Sem autorização para realizar essa operação"] });
-    }
-
-    let { idusuario, perfil } = req.body;
-    idusuario = (idusuario || "").toString().replace(/[^\d]+/g, "");
-    perfil = (perfil || "").toString().trim();
-    if (idusuario === "") {
-      return res.status(400).json({ error: ["Usuário não identificado"] });
-    }
-    if (!(perfil === "admin" || perfil === "user")) {
-      return res
-        .status(400)
-        .json({ error: ["Perfil de usuário incompatível"] });
-    }
-
-    return await UsuarioModel.findOne({ where: { idusuario } })
-      .then(async (usuario) => {
-        if (usuario) {
-          await usuario.update({ perfil });
-          return res
-            .status(200)
-            .json({ idusuario, mail: usuario.mail, perfil: usuario.perfil });
-        }
-        return res.status(400).json({ error: ["Usuário não identificado"] });
-      })
-      .catch((err) => {
-        try {
-          return res.status(400).json({
-            error: err.errors.map((item) => item.message),
-            type: "validation",
-          });
-        } catch (e) {
-          return res.status(400).json({ error: [e.message] });
-        }
-      });
-  }
+		return await UsuarioModel.findOne({ where: { idusuario } })
+			.then(async (usuario) => {
+				if (usuario) {
+					await usuario.update({ perfil });
+					return res
+						.status(200)
+						.json({ idusuario, mail: usuario.mail, perfil: usuario.perfil });
+				}
+				return res.status(400).json({ error: ["Usuário não identificado"] });
+			})
+			.catch((err) => {
+				try {
+					return res.status(400).json({
+						error: err.errors.map((item) => item.message),
+						type: "validation",
+					});
+				} catch (e) {
+					return res.status(400).json({ error: [e.message] });
+				}
+			});
+	}
 }
 
 module.exports = UsuarioController;

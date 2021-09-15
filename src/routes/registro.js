@@ -12,13 +12,13 @@ router.post("/create", create);
 router.put("/update", update);
 
 // curl -X GET -d "offset=0&limit=4" http://localhost:3100/registro/list
-router.get("/list", list)
+router.get("/list", list);
 
 // curl -X DELETE -d "idregistro=1" http://localhost:3100/registro/remove
-router.delete("/remove", remove)
+router.delete("/remove", remove);
 
-router.use( (req, res) => {
-    res.status(400).json({error:['Operação desconhecida com o registro']});
+router.use((req, res) => {
+	res.status(400).json({ error: ["Operação desconhecida com o registro"] });
 });
 
 module.exports = router;
