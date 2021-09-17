@@ -21,14 +21,13 @@ const authMiddleware = async (req, res, next) => {
 // verifica se o usuário é admin
 const adminMiddleware = async (req, res, next) => {
 	const { authorization } = req.headers;
-
 	if (!authorization)
 		return res.status(401).json({ error: ["É necessário efetuar o login"] });
 
 	const [, token] = authorization.split(" ");
 	try {
-		const r = await decodeToken(token);
-		if (r.perfil && r.perfil === "admin") return next();
+		const usuario = await validateToken(token);
+		if (usuario.perfil && usuario.perfil === "admin") return next();
 		throw new Error("Acesso autorizado apenas para usuário administrador");
 	} catch (error) {
 		return res.status(401).json({ error: [error.message] });

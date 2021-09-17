@@ -10,11 +10,11 @@ app.use(cors());
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
-    console.log(`Rodando na porta ${PORT}...`);
+	console.log(`Rodando na porta ${PORT}...`);
 });
 
-app.use('/', router);
+app.use("/", router);
 
-app.use( (req, res) => {
-    res.status(400).json({error:['URL desconhecida']});
+app.use((req, res) => {
+	res.status(400).json({ error: ["URL desconhecida"] });
 });
