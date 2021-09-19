@@ -1,4 +1,4 @@
-const { RegistroModel } = require("../models");
+const { RegistroModel, VacinaModel } = require("../models");
 const { getToken } = require("../middlewares");
 
 class RegistroController {
@@ -121,6 +121,12 @@ class RegistroController {
 		return await RegistroModel.findAndCountAll({
 			where: { idusuario: token.idusuario },
 			attributes: ["idregistro", "idvacina", "data"],
+			include: [
+				{
+					model: VacinaModel,
+					attributes: ["nome"],
+				},
+			],
 			order: [["data", "DESC"]],
 			offset,
 			limit,

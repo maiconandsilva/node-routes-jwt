@@ -1,4 +1,4 @@
-const { VacinaModel } = require("../models");
+const { VacinaModel, RegistroModel } = require("../models");
 
 class VacinaController {
 	async create(req, res) {
@@ -67,8 +67,15 @@ class VacinaController {
 		return await VacinaModel.findOne({ where: { idvacina } })
 			.then(async (vacina) => {
 				if (vacina !== null) {
-					await vacina.destroy();
-					return res.status(200).json({ idvacina });
+					const registro = await RegistroModel.findOne({ where: { idvacina } });
+					if (!registro) {
+						await vacina.destroy();
+						return res.status(200).json({ idvacina });
+					} else {
+						return res.status(400).json({
+							error: ["Não pode ser excluída por estar em algum registro"],
+						});
+					}
 				} else {
 					return res.status(400).json({ error: ["Registro inexistente"] });
 				}

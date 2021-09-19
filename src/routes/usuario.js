@@ -7,8 +7,8 @@ const { create, login, updatemail, updatesenha, updateperfil } =
 // curl -X POST -d "mail=teste@teste.com&senha=123456" http://localhost:3100/usuario/create
 router.post("/create", create);
 
-// curl -X GET -d "mail=teste@teste.com&senha=123456" http://localhost:3100/usuario/login
-router.get("/login", login);
+// curl -X POST -d "mail=teste@teste.com&senha=123456" http://localhost:3100/usuario/login
+router.post("/login", login);
 
 // a rota é validade por authMiddleware - precisa estar logado
 // curl -X PUT -d "mail=tester@teste.com" http://localhost:3100/usuario/update/mail

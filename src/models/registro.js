@@ -2,7 +2,6 @@ const Sequelize = require("sequelize");
 const database = require("../database");
 
 const UsuarioModel = require("./Usuario");
-const VacinaModel = require("./Vacina");
 
 const Registro = database.define(
 	"registro",
@@ -41,29 +40,6 @@ const Registro = database.define(
 					const usuario = await UsuarioModel.findOne({ where: { idusuario } });
 					if (usuario === null) {
 						return next(`Usuário ${idusuario} não identificado`);
-					}
-					return next();
-				},
-			},
-		},
-		idvacina: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			references: {
-				model: VacinaModel,
-				key: "idvacina",
-			},
-			onDelete: "restrict",
-			onUpdate: "cascade",
-			hooks: true, // força o sequelize a olhar aqui antes de deletar na tabela de origem
-			validate: {
-				foreignkey: async (idvacina, next) => {
-					if (idvacina === "") {
-						return next("Forneça a identificação da vacina");
-					}
-					const vacina = await VacinaModel.findOne({ where: { idvacina } });
-					if (vacina === null) {
-						return next(`Vacina ${idvacina} não identificada`);
 					}
 					return next();
 				},
