@@ -58,13 +58,14 @@ const Usuario = database.define(
 			beforeCreate: (usuario) => {
 				usuario.senha = bcrypt.hashSync(usuario.senha, bcrypt.genSaltSync(10));
 			},
-			beforeUpdate: (usuario) => {
+			beforeUpdate: (usuario, options) => {
 				// beforeUpdate é chamado sempre ao atualizar, então é preciso saber se é para atualizar a senha
-				if (usuario.senha)
+				if (options.fields && options.fields[0] === "senha") {
 					usuario.senha = bcrypt.hashSync(
 						usuario.senha,
 						bcrypt.genSaltSync(10)
 					);
+				}
 			},
 		},
 	}
