@@ -163,6 +163,25 @@ class UsuarioController {
 				}
 			});
 	}
+
+	async list(req, res) {
+		let { limit, offset } = req.body;
+		return await UsuarioModel.findAndCountAll({
+			attributes: ["idusuario", "mail", "perfil"],
+			order: [["mail", "ASC"]],
+			offset,
+			limit,
+		})
+			.then((usuarios) => {
+				return res.status(200).json({
+					usuarios: usuarios.rows.map((item) => item.get()),
+					count: usuarios.count,
+				});
+			})
+			.catch((e) => {
+				return res.status(400).json({ error: [e.message] });
+			});
+	}
 }
 
 module.exports = UsuarioController;
