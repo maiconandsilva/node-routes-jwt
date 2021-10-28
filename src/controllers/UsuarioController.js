@@ -16,11 +16,15 @@ class UsuarioController {
 			})
 			.catch((err) => {
 				try {
+					if( err.message ){
+						return res.status(400).json({ error: [err.message] });
+					}
 					return res.status(400).json({
 						error: err.errors.map((item) => item.message),
 						type: "validation",
 					});
 				} catch (e) {
+					console.log("e:", e.message);
 					return res.status(400).json({ error: [e.message] });
 				}
 			});
@@ -116,6 +120,9 @@ class UsuarioController {
 			})
 			.catch((err) => {
 				try {
+					if( err.message ){
+						return res.status(400).json({ error: [err.message] });
+					}
 					return res.status(400).json({
 						error: err.errors.map((item) => item.message),
 						type: "validation",
