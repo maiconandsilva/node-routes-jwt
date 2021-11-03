@@ -56,14 +56,14 @@ const Usuario = database.define(
 		hooks: {
 			// hooks (also known as lifecycle events), are functions which are called before and after calls in sequelize are executed
 			beforeCreate: (usuario) => {
-				if( usuario.senha.length < 6 || usuario.senha.length > 10 ){
-					throw new Error("A senha deve ter de 6 a 10 caracteres");
+				if( usuario.senha.length < 6  ){
+					throw new Error("A senha deve ter pelo menos 6 caracteres");
 				}
 				usuario.senha = bcrypt.hashSync(usuario.senha, bcrypt.genSaltSync(10));
 			},
 			beforeUpdate: (usuario, options) => {
-				if( usuario.senha.length < 6 || usuario.senha.length > 10 ){
-					throw new Error("A senha deve ter de 6 a 10 caracteres");
+				if( usuario.senha.length < 6 ){
+					throw new Error("A senha deve ter pelo menos 6 caracteres");
 				}
 				// beforeUpdate é chamado sempre ao atualizar, então é preciso saber se é para atualizar a senha
 				if (options.fields && options.fields[0] === "senha") {
