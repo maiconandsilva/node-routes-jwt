@@ -1,8 +1,8 @@
 //importa o arquivo database/index.js
 const database = require("../database");
 
-const VacinaModel = require("./Vacina");
-const RegistroModel = require("./Registro");
+const VacinaModel = require("./vacina");
+const RegistroModel = require("./registro");
 
 VacinaModel.hasMany(RegistroModel, {
 	foreignKey: {
@@ -24,7 +24,7 @@ database.sync();
 
 // importa e exporta
 module.exports = {
-	UsuarioModel: require("./Usuario"),
-	VacinaModel: require("./Vacina"),
-	RegistroModel: require("./Registro"),
+	UsuarioModel: require("./usuario"),
+	VacinaModel: require("./vacina"),
+	RegistroModel: require("./registro"),
 };
